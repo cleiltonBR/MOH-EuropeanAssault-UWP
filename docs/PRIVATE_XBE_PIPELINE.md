@@ -1,28 +1,25 @@
-# Private XBE recompilation
+# Private XBE analysis and recompilation
 
-The XBE and all generated game-specific C must remain on the owner's machine. Do not upload them to this public repository, Actions artifacts, or releases.
+The XBE and all generated game-specific C must stay out of this public repository. The supported cloud workflow is stored in the separate private repository:
 
-## Requirements
+- Private input repository: `cleiltonBR/MOH-EuropeanAssault-Private`
+- Workflow: `.github/workflows/private-xbe-recompile.yml`
+- Source checkout: this repository's `uwp/port-foundation` branch
+- Private output: a GitHub Actions artifact in the private repository, retained for one day
 
-- Windows with PowerShell
-- Python 3.10+ available through the `py -3` launcher
-- Capstone: `py -3 -m pip install capstone`
+## Run from a phone
 
-## Run
+1. Open the [private repository](https://github.com/cleiltonBR/MOH-EuropeanAssault-Private).
+2. Open **Actions**.
+3. Select **Private XBE analysis and recompilation**.
+4. Tap **Run workflow**, keep the `main` branch selected, and confirm.
+5. Wait for the run to finish. The workflow checks the XBE signature, parses the XBE, disassembles executable code, identifies functions, recovers ABI information, and runs the C recompiler.
+6. If successful, download the artifact named `moh-european-assault-private-recomp` from that run in the private repository.
 
-From a PowerShell window, in the repository checkout:
+The workflow checks out this public source branch but does not copy the XBE or generated game code into it. The artifact is created only in the private repository and expires after one day.
 
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\tools\run-private-xbe-pipeline.ps1 -XbePath "D:\Games\MOH European Assault\default.xbe"
-```
+## Important limitations
 
-The script runs the documented stages in order: XBE parse, disassembly, function identification, ABI recovery, and full C recompilation. It writes generated sources to `source/mygame/src/recomp/gen/` and intermediate analysis to the toolkit's local `tools/*/output/` folders. These paths are ignored by the repository's `.gitignore`.
-
-The script uses `--exclude-manual` with `source/mygame/src/recomp_manual.c` so functions implemented by hand are not emitted again.
-
-## Important limitation
-
-The existing `source/gen_hand_edits.txt` is a record of line-specific edits from the existing generated tree. It is not a patch program. The runner deliberately does **not** apply those edits automatically: line-number-only replay could silently modify the wrong C statements if the generated output differs. Review and safely reapply each listed edit before attempting a full build.
-
-This pipeline does not build a UWP package and does not prove that the game starts on Xbox. It only creates the private recompiled C input needed for the next integration stage.
+- A successful recompilation is not a UWP build and does not prove the game starts on Xbox.
+- The existing `source/gen_hand_edits.txt` records edits made to a prior generated tree. It is not an automated patch. The workflow does not replay line-number edits, because that could silently alter the wrong code. We must compare and safely reapply the relevant edits before using generated code in a build.
+- The workflow is a first cloud pipeline run. Its actual execution is still pending; do not treat the workflow file being committed as proof that the pipeline succeeded.
