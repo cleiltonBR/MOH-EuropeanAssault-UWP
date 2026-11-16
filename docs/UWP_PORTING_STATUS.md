@@ -45,3 +45,10 @@ The first target is a genuine UWP package that can be deployed to an Xbox Series
 ## Current milestone
 
 **Foundation/audit only.** The branch and automated source audit are being established first. No UWP package or Xbox runtime success is claimed yet.
+
+## XBE received and structurally checked
+
+The user supplied `default.xbe`. Its header identifies **MOH European Assault** (Title ID `0x4541005E`), with 12 sections and decoded entry point `0x001EF095`. This matches the entry-point constant already present in `source/mygame/src/main.c`. The detailed section map and file SHA-256 are recorded in [DEFAULT_XBE_ANALYSIS.md](DEFAULT_XBE_ANALYSIS.md).
+
+The binary was inspected in the private analysis environment and was not committed. Full disassembly/recompilation remains pending: the repository's documented pipeline requires Python 3.10+ and Capstone, and the current execution environment does not have Capstone installed. The generated `src/recomp/gen/` tree remains empty in the public repository. The XBE alone also does not include the game's separate data assets.
+
