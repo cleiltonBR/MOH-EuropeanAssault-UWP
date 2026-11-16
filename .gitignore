@@ -1,0 +1,6 @@
+# Private game-specific recompiler output (derived from the user's XBE)
+source/mygame/src/recomp/gen/
+source/xboxrecomp-0.16.0/tools/disasm/output/
+source/xboxrecomp-0.16.0/tools/func_id/output/
+source/xboxrecomp-0.16.0/tools/abi_analysis/output/
+source/xboxrecomp-0.16.0/tools/recomp/output/
