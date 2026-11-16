@@ -51,7 +51,7 @@ def main() -> int:
     stub_file = generated / "recomp_stubs_unresolved.c"
     text = stub_file.read_text(encoding="utf-8", errors="replace") if stub_file.exists() else ""
     pattern = re.compile(
-        r"void\s+(sub_([0-9A-Fa-f]+))\\(void\\)\s*\\{[^}]*?RECOMP_STUB_HIT\\(0x[0-9A-Fa-f]+u\\);[^}]*?/\\*\s*(.*?)\s*\\*/\s*\\}"
+        r"void\\s+(sub_([0-9A-Fa-f]{8}))\\(void\\)\\s*\\{\\s*RECOMP_STUB_HIT\\(0x[0-9A-Fa-f]{8}u\\);\\s*g_esp\\s*\\+=\\s*\\d+;\\s*/\\*\\s*(.*?)\\s*\\*/\\s*\\}"
     )
 
     records = []
@@ -79,6 +79,11 @@ def main() -> int:
         })
 
     section_counts = Counter(item["section"] for item in records)
+    if len(records) != int(recomp_summary.get("unresolved_stubs", len(records))):
+        raise SystemExit(
+            f"Audit parsed {len(records)} stub bodies, but summary reports "
+            f"{recomp_summary.get('unresolved_stubs')} unresolved stubs; refusing incomplete report"
+        )
     classification_counts = Counter(item["classification"] for item in records)
     reason_counts = Counter(item["stub_note"] for item in records)
 
