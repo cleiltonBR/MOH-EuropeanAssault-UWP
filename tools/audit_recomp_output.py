@@ -51,7 +51,7 @@ def main() -> int:
     stub_file = generated / "recomp_stubs_unresolved.c"
     text = stub_file.read_text(encoding="utf-8", errors="replace") if stub_file.exists() else ""
     pattern = re.compile(
-        r"void\\s+(sub_([0-9A-Fa-f]{8}))\\(void\\)\\s*\\{\\s*RECOMP_STUB_HIT\\(0x[0-9A-Fa-f]{8}u\\);\\s*g_esp\\s*\\+=\\s*\\d+;\\s*/\\*\\s*(.*?)\\s*\\*/\\s*\\}"
+        r"void\s+(sub_([0-9A-Fa-f]{8}))\(void\)\s*\{\s*RECOMP_STUB_HIT\(0x[0-9A-Fa-f]{8}u\);\s*g_esp\s*\+=\s*\d+;\s*/\*\s*(.*?)\s*\*/\s*\}"
     )
 
     records = []
