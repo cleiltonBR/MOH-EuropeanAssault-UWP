@@ -44,7 +44,20 @@ The first target is a genuine UWP package that can be deployed to an Xbox Series
 
 ## Current milestone
 
-**Foundation/audit only.** The branch and automated source audit are being established first. No UWP package or Xbox runtime success is claimed yet.
+**Initial XBE analysis and recompilation completed; UWP runtime integration remains pending.**
+
+The private GitHub Actions pipeline successfully parsed the user's XBE, disassembled its executable sections, identified functions, recovered ABI/signature data, and generated C output. The successful run reported:
+
+- 21,149 total functions; 21,142 translated; 0 translation failures.
+- 255 unresolved call-target stubs and 7 manual functions.
+- 85 generated C chunks plus dispatch, declarations, types and unresolved-stub files.
+- The first output artifact was retained privately; generated game code and the XBE remain outside this public repository.
+
+These numbers describe the recompiler's output, not a working game. In particular, unresolved stubs still need classification and implementation, and generated output must be checked against the project's manual post-processing requirements before integration.
+
+A private workflow audit step is now being added to classify unresolved stubs by XBE section and by whether they overlap detected functions. The largest known concentration is in the embedded Xbox library sections (D3D, DSOUND, XPP and XGRPH), so these must be treated as Xbox SDK/runtime compatibility work rather than blindly replaced with empty functions.
+
+No UWP package, successful game initialization, rendered frame, or Xbox runtime success is claimed yet.
 
 ## XBE received and structurally checked
 
