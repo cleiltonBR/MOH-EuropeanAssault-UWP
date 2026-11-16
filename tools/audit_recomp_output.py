@@ -51,7 +51,7 @@ def main() -> int:
     stub_file = generated / "recomp_stubs_unresolved.c"
     text = stub_file.read_text(encoding="utf-8", errors="replace") if stub_file.exists() else ""
     pattern = re.compile(
-        r"void\\s+(sub_([0-9A-Fa-f]+))\\(void\\)\\s*\\{[^}]*?RECOMP_STUB_HIT\\(0x[0-9A-Fa-f]+u\\);[^}]*?/\\*\\s*(.*?)\\s*\\*/\\s*\\}"
+        r"void\s+(sub_([0-9A-Fa-f]+))\\(void\\)\s*\\{[^}]*?RECOMP_STUB_HIT\\(0x[0-9A-Fa-f]+u\\);[^}]*?/\\*\s*(.*?)\s*\\*/\s*\\}"
     )
 
     records = []
@@ -101,7 +101,7 @@ def main() -> int:
     }
 
     json_path = report_dir / "unresolved_stub_audit.json"
-    json_path.write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
+    json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     lines = [
         "# Recompilation output audit",
@@ -125,7 +125,7 @@ def main() -> int:
         "Review library-section targets as potential Xbox SDK/library compatibility work before implementing replacements.",
         "",
     ]
-    (report_dir / "unresolved_stub_audit.md").write_text("\\n".join(lines), encoding="utf-8")
+    (report_dir / "unresolved_stub_audit.md").write_text("\n".join(lines), encoding="utf-8")
 
     print(f"Parsed {len(records)} unresolved stubs")
     print("By section: " + json.dumps(dict(section_counts), sort_keys=True))
