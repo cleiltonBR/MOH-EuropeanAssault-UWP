@@ -50,13 +50,21 @@ def main() -> int:
 
     stub_file = generated / "recomp_stubs_unresolved.c"
     text = stub_file.read_text(encoding="utf-8", errors="replace") if stub_file.exists() else ""
+    # Match each function body broadly, then validate the instrumentation call.
+    # Generated cleanup/comment formatting varies between unresolved targets.
     pattern = re.compile(
-        r"void\s+(sub_([0-9A-Fa-f]{8}))\(void\)\s*\{\s*RECOMP_STUB_HIT\(0x[0-9A-Fa-f]{8}u\);\s*g_esp\s*\+=\s*\d+;\s*/\*\s*(.*?)\s*\*/\s*\}"
+        r"void\s+(sub_([0-9A-Fa-f]{8}))\s*\(\s*void\s*\)\s*\{(.*?)\}",
+        re.DOTALL,
     )
 
     records = []
     for match in pattern.finditer(text):
-        name, address_hex, reason = match.groups()
+        name, address_hex, body = match.groups()
+        hit = re.search(r"RECOMP_STUB_HIT\(0x[0-9A-Fa-f]{8}u\)", body)
+        if not hit:
+            continue
+        reason_match = re.search(r"/\*\s*(.*?)\s*\*/", body, re.DOTALL)
+        reason = reason_match.group(1).strip() if reason_match else "no generator note"
         address = int(address_hex, 16)
         section_name = next((name for start, end, name in sections if start <= address < end), "OUTSIDE_SECTIONS")
         containing = next(
